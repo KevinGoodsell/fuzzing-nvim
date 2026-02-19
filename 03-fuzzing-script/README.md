@@ -181,7 +181,7 @@ vim.fn.stdioopen({
 ```
 
 This opens stdin (and stdout) as a channel so we can read stdin. `on_stdin` is a
-callback that recieves the data. Making it buffered causes the callback to be
+callback that receives the data. Making it buffered causes the callback to be
 called just once after all the input is available, which should be fine for our
 purposes and make things a little bit simpler.
 
@@ -240,7 +240,7 @@ for example).
 The operations are pretty limited: changing text, adding extmarks, deleting
 extmarks, and clearing the namespace. There are also operations for "setting" an
 extmark, meaning an ID is supplied so that an existing extmark can be replaced,
-or an extmark can be added with a pre-determined ID. Extmarks can also be
+or an extmark can be added with a predetermined ID. Extmarks can also be
 provided with an end position, and various flags can be set.
 
 Here is an example command for running the script, which I've named

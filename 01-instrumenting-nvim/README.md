@@ -14,7 +14,7 @@ While a number of people reported encountering this assertion failure, there was
 very little known about how to reproduce it. It occurred randomly while people
 were working in Neovim.
 
-Issues like this can be a nightmare for software develepers. It's rare enough
+Issues like this can be a nightmare for software developers. It's rare enough
 that developers don't see it, the resulting error messages or stack traces
 clearly show that a problem exists but don't tell you where or when the problem
 occurred, and it happens deep into a user session without a clear action that
@@ -88,7 +88,7 @@ If your Neovim repository isn't fresh, you should probably run `make distclean`
 first, so that `cmake` will rebuild the build system with the new options
 selected.
 
-We also need to choose what verion of the AFL++ compiler wrapper to use. [The
+We also need to choose what version of the AFL++ compiler wrapper to use. [The
 AFL++ documentation](https://aflplus.plus/docs/fuzzing_in_depth/) gives some
 guidance, which starts with "use LTO if possible", so we'll use that. Here's the
 build command:

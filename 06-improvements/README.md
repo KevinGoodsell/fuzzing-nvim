@@ -25,7 +25,7 @@ Now rebuild nvim with an updated command:
 ```
 
 Running the fuzzing campaign again with the new binary gives a stability of
-100%, showing that the inconsistent parts of the exectution were outside of the
+100%, showing that the inconsistent parts of the execution were outside of the
 areas we care about. The better stability might make the fuzzing process faster,
 and I would expect could give better results.
 
