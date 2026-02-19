@@ -94,7 +94,7 @@ guidance, which starts with "use LTO if possible", so we'll use that. Here's the
 build command:
 
 ```sh
-# CC=/AFLplusplus/afl-lto CXX=/AFLplusplus/afl-lto++ make CMAKE_BUILD_TYPE=Debug CMAKE_EXTRA_FLAGS="-DSTATIC_BUILD=1"
+# CC=/AFLplusplus/afl-clang-lto CXX=/AFLplusplus/afl-clang-lto++ make CMAKE_BUILD_TYPE=Debug CMAKE_EXTRA_FLAGS="-DSTATIC_BUILD=1"
 ```
 
 I don't know if the C++ compiler is ever used in building Neovim, I added it
@@ -103,7 +103,7 @@ just in case.
 But this build fails:
 
 ```
-/AFLplusplus/afl-lto -fPIC -g -O2 -fomit-frame-pointer -Wall  -fPIC -DLUA_USE_APICHECK -funwind-tables -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -U_FORTIFY_SOURCE  -DLUA_ROOT=\"/neovim/.deps/usr\" -DLUA_MULTILIB=\"lib\" -DLUA_LJDIR=\"/neovim/.deps/usr/share/luajit-2.1\" -fno-stack-protector   -c -o lib_buffer_dyn.o lib_buffer.c
+/AFLplusplus/afl-clang-lto -fPIC -g -O2 -fomit-frame-pointer -Wall  -fPIC -DLUA_USE_APICHECK -funwind-tables -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -U_FORTIFY_SOURCE  -DLUA_ROOT=\"/neovim/.deps/usr\" -DLUA_MULTILIB=\"lib\" -DLUA_LJDIR=\"/neovim/.deps/usr/share/luajit-2.1\" -fno-stack-protector   -c -o lib_buffer_dyn.o lib_buffer.c
 lj_err.c:492:2: error: "Broken build system -- only use the provided Makefiles!"
   492 | #error "Broken build system -- only use the provided Makefiles!"
       |  ^
