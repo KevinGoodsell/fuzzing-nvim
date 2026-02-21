@@ -1,0 +1,12 @@
+diff --git a/cmake.deps/cmake/BuildLuajit.cmake b/cmake.deps/cmake/BuildLuajit.cmake
+index 070eeafc00..7d3a19858e 100644
+--- a/cmake.deps/cmake/BuildLuajit.cmake
++++ b/cmake.deps/cmake/BuildLuajit.cmake
+@@ -71,7 +71,7 @@ if(CYGWIN)
+ elseif(UNIX)
+   BuildLuajit(INSTALL_COMMAND ${BUILDCMD_UNIX}
+     CC=${DEPS_C_COMPILER} PREFIX=${DEPS_INSTALL_DIR}
+-    ${DEPLOYMENT_TARGET} install)
++    ${DEPLOYMENT_TARGET} TARGET_XCFLAGS=-DLUAJIT_UNWIND_EXTERNAL install)
+ 
+ elseif(MINGW)

@@ -2,7 +2,7 @@
 
 [The issue](https://github.com/neovim/neovim/issues/27196) in question is an
 assertion failure in Neovim's `marktree.c` code. The code is not very easy to
-understand, but I gather it's a B-tree implementation used for implementing
+understand, but I gather it's a B-tree data structure used for implementing
 **extmarks**. Extmarks are locations in the buffer that adjust as text is
 changed. The assertion that fails is "seen", which is a boolean value that gets
 set when a loop finds the thing it is looking for. The particular function has a
@@ -41,7 +41,7 @@ get started. A lot of what I do later will be based on this.
 ## Getting AFL++
 
 I opted to use the [Docker
-image](https://hub.docker.com/r/aflplusplus/aflplusplus) of AFL++. I generally
+image](https://hub.docker.com/r/aflplusplus/aflplusplus) for AFL++. I generally
 use containers under Podman rather than Docker, but I don't think there are any
 differences that are significant for our purposes here. If you are following
 along you may have to make minor adjustments.
@@ -100,7 +100,7 @@ build command:
 I don't know if the C++ compiler is ever used in building Neovim, I added it
 just in case.
 
-But this build fails:
+Unfortunately, this build fails:
 
 ```
 /AFLplusplus/afl-clang-lto -fPIC -g -O2 -fomit-frame-pointer -Wall  -fPIC -DLUA_USE_APICHECK -funwind-tables -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -U_FORTIFY_SOURCE  -DLUA_ROOT=\"/neovim/.deps/usr\" -DLUA_MULTILIB=\"lib\" -DLUA_LJDIR=\"/neovim/.deps/usr/share/luajit-2.1\" -fno-stack-protector   -c -o lib_buffer_dyn.o lib_buffer.c
@@ -118,13 +118,14 @@ there's a lengthy comment at the top describing the options for frame unwinding,
 and the error comes from a section of related conditionally-compiled code.
 Reading the comment you can discover that external frame unwinding is the
 default on toolchains that produce unwind tables by default, and that the POSIX
-and Windows ABIs for x64 mandate unwind tables. Given that, we should be able to
-specify that we want external frame unwinding and bypass the issue.
+and Windows ABIs for x86-64 mandate unwind tables. Given that, and assuming
+we're on x86-64 hardware, we should be able to specify that we want external
+frame unwinding and bypass the issue.
 
 The specific problem comes from `Makefile`, where it tries to check for frame
-unwinding by compiling a small test program and examining the resulting object
-file. But if you check the `.o` files that have been built, you'll see that they
-aren't standard object files:
+unwinding by compiling a small test program and examining strings in the
+resulting object file. But if you check the `.o` files that have been built,
+you'll see that they aren't standard ELF object files:
 
 ```
 # file .deps/build/src/luajit/src/lj_alloc.o
@@ -138,21 +139,6 @@ Makefile doesn't handle it.
 This isn't a big deal, we don't need to rely on the Makefile's autodetection for
 unwind tables, we already know that the toolchain should produce them and
 external frame unwinding should work. We can just request external frame
-unwinding. To do that, apply this patch:
-
-```
-diff --git a/cmake.deps/cmake/BuildLuajit.cmake b/cmake.deps/cmake/BuildLuajit.cmake
-index 070eeafc00..7d3a19858e 100644
---- a/cmake.deps/cmake/BuildLuajit.cmake
-+++ b/cmake.deps/cmake/BuildLuajit.cmake
-@@ -71,7 +71,7 @@ if(CYGWIN)
- elseif(UNIX)
-   BuildLuajit(INSTALL_COMMAND ${BUILDCMD_UNIX}
-     CC=${DEPS_C_COMPILER} PREFIX=${DEPS_INSTALL_DIR}
--    ${DEPLOYMENT_TARGET} install)
-+    ${DEPLOYMENT_TARGET} TARGET_XCFLAGS=-DLUAJIT_UNWIND_EXTERNAL install)
- 
- elseif(MINGW)
-```
-
-Then rerun the build command. This time it should succeed.
+unwinding. A patch to make this change is given in
+`luajit-unwind-external.patch`. After applying that patch, rerun the build and
+it should be successful.

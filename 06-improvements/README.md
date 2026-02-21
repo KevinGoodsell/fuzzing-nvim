@@ -24,10 +24,10 @@ Now rebuild nvim with an updated command:
 # AFL_LLVM_ALLOWLIST=/neovim/allowlist.txt CC=/AFLplusplus/afl-clang-lto CXX=/AFLplusplus/afl-clang-lto++ make CMAKE_BUILD_TYPE=Debug CMAKE_EXTRA_FLAGS="-DSTATIC_BUILD=1"
 ```
 
-Running the fuzzing campaign again with the new binary gives a stability of
-100%, showing that the inconsistent parts of the execution were outside of the
-areas we care about. The better stability might make the fuzzing process faster,
-and I would expect could give better results.
+Running the fuzzing process again with the new binary gives a stability of 100%,
+showing that the inconsistent parts of the execution were outside of the areas
+we care about. The better stability might make the fuzzing process faster, and I
+would expect might give better results.
 
 ## Minimization
 
@@ -49,13 +49,13 @@ didn't need until we had some test cases, but if we want to keep looking for a
 minimal test case we could make these changes and try again.
 
 The next thing I would consider is whether we can update our binary format to
-make the job of `afl-tmin` easier. We have extmark flags packed into a byte of
-the different extmark adding operations. It would be convenient to use fewer
-flags, because unnecessary opts clutter the API calls. This is a kind of
-minimization that `afl-tmin` can't do, because it doesn't know that a particular
-bit being 0 is "smaller". If I were starting over, I'd consider things like this
-when defining the binary format. Maybe the different operations could be
-variable-width, more closely reflecting how an actual API call looks.
+make the job of `afl-tmin` easier. We have extmark flags represented as bits in
+one byte of the parameters in an "add extmark" operation. It would be convenient
+to use fewer flags, because unnecessary opts clutter the API calls. This is a
+kind of minimization that `afl-tmin` can't do, because it doesn't know that a
+particular bit being 0 is "smaller". If I were starting over, I'd consider
+things like this when defining the binary format. Maybe the different operations
+could be variable-width, more closely reflecting how an actual API call looks.
 
 One of the limitations of this approach is that updating the binary format is
 kind of undesirable once you've found some useful inputs. If I started updating
@@ -69,11 +69,13 @@ Here are some questions that I'm left with.
 
 Why was stability low when the entire binary was instrumented? I don't know
 enough about the internals of Neovim to make a good guess here. I'm sure there's
-some asynchronous parts, so maybe that's the answer?
+some asynchronous parts, so maybe non-deterministic processing of asynchronous
+events is the cause.
 
 Was it necessary to build a static binary, particularly after switching to
 partial instrumentation? I suspect as long as the parts you want instrumented
 are statically linked then dynamic linking of other parts should be fine.
 
 Could one of the other AFL++ compilers have been better for our purposes? The
-docs generally suggest LTO if possible, and it seemed to mostly work fine.
+docs generally suggest LTO if possible, and it seemed to mostly work fine, only
+requiring an adjustment to how LuaJIT was built.

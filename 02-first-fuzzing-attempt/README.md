@@ -8,7 +8,7 @@ Fuzzing with AFL++ usually expects the program being fuzzed to accept input on
 stdin. Neovim typically accepts input from a TTY. If stdin isn't a TTY, Neovim
 takes the data on stdin as file content to load into a buffer, not as commands
 to execute. There may be some combination of command line arguments to make this
-work, but it's just the beginning of the problems.
+work, but it's only the first of many problems.
 
 Neovim also generally takes over the terminal screen when it runs, but AFL++
 does the same, and uses it to display its status report. I don't know exactly
@@ -30,16 +30,16 @@ otherwise AFL++ would see it as a hung process and record that as a finding
 I had not thought this through sufficiently, and needed to reconsider the
 approach.
 
-For the record, I did *try* to launch a fuzzing campaign in spite of these
-problems (before all of them had occurred to me), but `afl-fuzz` gave up
-immediately because nvim didn't exit on the first input. AFL++ really wants
-valid inputs for its initial seeds, so if they crash or hang it won't continue.
-In hindsight it's probably a good thing it stopped.
+For the record, I did *try* a fuzzing attempt in spite of these problems (before
+all of them had occurred to me), but `afl-fuzz` gave up immediately because nvim
+didn't exit on the first input. AFL++ really wants valid inputs for its initial
+seeds, so if they crash or hang it won't continue. In hindsight it's probably a
+good thing it stopped.
 
 I thought about modifying the nvim code to prevent file writing. As for running
-scripts system commands, it would be running inside the AFL++ container so the
-potential damage would be limited. But this only begins to address the problems
-noted, and it's not a simple change to make in the code.
+scripts and system commands, it would be running inside the AFL++ container so
+the potential damage would be limited. But this only begins to address the
+problems noted, and it's not a simple change to make in the code.
 
 Another thought I had was to take the relevant source file, `marktree.c`, and
 build a small test program around it. Maybe that would work, but it would

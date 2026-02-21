@@ -1,0 +1,4 @@
+src/nvim/marktree.c
+src/nvim/extmark.c
+src/nvim/api/buffer.c
+src/nvim/api/extmark.c

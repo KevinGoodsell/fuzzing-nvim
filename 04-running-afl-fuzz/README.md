@@ -2,9 +2,9 @@
 
 We're almost ready to start fuzzing, but one thing that we need first is seeds.
 Ideally seeds should be valid inputs to the program being fuzzed. Our particular
-program accepts any random byte sequence as valid, so we can get away with a
-lazy approach and just use random seeds. It might be useful to formulate some
-meaningful inputs to use as seeds, but I just used the lazy approach:
+program accepts any random byte sequence as valid, so we can get away with using
+random seeds. It might be useful to formulate some meaningful inputs to use as
+seeds, but I just used the lazy approach:
 
 ```sh
 # mkdir -p fuzz-1/seeds
@@ -55,7 +55,7 @@ The next step is to minimize the crashing inputs with `afl-tmin`.
 # for f in id* ; do afl-tmin -i "$f" -o "/neovim/fuzz-1/minimized/$f" -- /neovim/build/bin/nvim -n -u NONE -i NONE --headless --cmd "source /neovim/extmark-fuzz.lua" ; done
 ```
 
-Note the use of full paths in this case. I'm running this from the crashes
+Note the use of full paths in this case. I'm running this from the `crashes`
 directory to keep the shell variable substitutions simple, so the paths have to
 be adjusted.
 
